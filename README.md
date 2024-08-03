@@ -1,95 +1,42 @@
-# Nmap AI Security Scanner
+# AI Tools for Cybersecurity
 
-This Python script uses `nmap` to scan a local subnet for open ports and then sends the results to OpenAI's ChatGPT to get security recommendations. The results and recommendations are saved to a text file.
+Welcome to the **AI Tools for Cybersecurity** repository! This repository contains a collection of security tools written in Python, designed to leverage the power of the OpenAI API for enhanced security analysis and recommendations.
 
-## Features
+## Overview
 
-- Scans a specified subnet for open ports.
-- Sends scan results to OpenAI's ChatGPT for security recommendations.
-- Saves the scan results and recommendations to a text file.
-- Processes each IP address individually and appends the results to the file.
+This repository is organized into multiple folders, each containing a specific security tool. These tools are designed to perform various cybersecurity tasks, such as network scanning, vulnerability assessment, and log analysis, and then use OpenAI's ChatGPT to provide detailed security recommendations.
+
+## Tools Included
+
+### 1. Nmap AI Security Scanner
+- **Description**: Scans a local subnet for open ports using `nmap` and sends the results to OpenAI's ChatGPT for security recommendations.
+- **Folder**: `nmap-ai`
+- **Usage**: See the README in the `nmap_ai` folder for detailed instructions.
+
+### 2. TBD
 
 ## Requirements
 
 - Python 3.6+
-- `nmap` installed on your system
-- `python-nmap` library
-- `openai` library
 - OpenAI API key
+- Additional requirements specific to each tool (see individual tool README files)
 
-## Installation
-
-1. **Install nmap**:
-    ```bash
-    sudo apt-get install nmap
-    ```
-
-2. **Clone the repository**:
-    ```bash
-    git clone https://github.com/initcyber/ai_tools.git
-    cd ai_tools/nmap-ai-security-scanner
-    ```
-
-3. **Create a virtual environment**:
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-
-4. **Install the required Python libraries**:
-    ```bash
-    pip install python-nmap openai
-    pip install openai
-    ```
 
 ## Usage
 
-1. **Set your OpenAI API key**:
-    Replace `'YOUR_OPENAI_API_KEY'` in the script with your actual OpenAI API key.
+Each tool has its own folder and README file with detailed instructions on how to use it. Navigate to the specific tool's folder and follow the instructions provided.
 
-2. **Run the script**:
-    ```bash
-    python nmapai.py
-    ```
+## Contributing
 
-3. **Check the output**:
-    The scan results and security recommendations will be saved to `scan_results.txt`.
+Contributions are welcome! If you have any improvements or new tools to add, please open an issue or submit a pull request.
 
-## Example Output
+## License
 
-### Nmap Scan Results:
-```json
-[
-  {
-    "host": "192.168.1.1",
-    "status": "up",
-    "ports": [
-      {"port": 22, "state": "open", "service": "ssh"},
-      {"port": 80, "state": "open", "service": "http"}
-    ]
-  },
-  {
-    "host": "192.168.1.2",
-    "status": "up",
-    "ports": [
-      {"port": 22, "state": "open", "service": "ssh"},
-      {"port": 443, "state": "open", "service": "https"}
-    ]
-  }
-]
-
-Based on the results of the nmap scan provided, here are some security recommendations:
-
-1. **Close Unused Ports**: Identify and close any unnecessary open ports that are not required for the functioning of the server. Ports with services that are not needed should be closed to reduce the attack surface.
-
-2. **Update Services**: Ensure that all the services running on the open ports are up to date with the latest security patches. Keeping services updated helps protect against known vulnerabilities and exploits.
-
-3. **Implement Firewalls**: Set up firewalls to restrict access to the server and only allow traffic on necessary ports. This can help prevent unauthorized access and protect against malicious attacks.
-
-4. **Use Strong Authentication**: Ensure that strong authentication mechanisms are in place for all services, such as using key-based authentication for SSH and strong passwords for other services.
-
-### Contributing
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
-
-### License
 This project is licensed under the MIT License. See the LICENSE file for details.
+
+## Contact
+
+For any questions or support, please contact justin@initcyber.com .
+
+
+

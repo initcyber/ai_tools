@@ -1,21 +1,21 @@
 # Nmap AI Security Scanner
 
-This Python script uses `nmap` to scan a local subnet for open ports and then sends the results to OpenAI's ChatGPT to get security recommendations. The results and recommendations are saved to a text file.
+This Python script automates the process of checking for outdated packages in your Python environment and queries OpenAI's GPT model for potential security vulnerabilities associated with these outdated packages.
 
 ## Features
 
-- Scans a specified subnet for open ports.
-- Sends scan results to OpenAI's ChatGPT for security recommendations.
-- Saves the scan results and recommendations to a text file.
-- Processes each IP address individually and appends the results to the file.
+- Identifies outdated Python packages in your environment
+- Queries OpenAI's GPT model for vulnerability information
+- Provides upgrade recommendations
+- Saves vulnerability reports to a text file
 
 ## Requirements
 
-- Python 3.6+
-- `nmap` installed on your system
-- `python-nmap` library
-- `openai` library
-- OpenAI API key
+Before you begin, ensure you have met the following requirements:
+
+- Python 3.6 or higher
+- pip (Python package installer)
+- An OpenAI API key
 
 ## Installation
 
@@ -33,8 +33,9 @@ This Python script uses `nmap` to scan a local subnet for open ports and then se
 
 4. **Install the required Python libraries**:
     ```bash
-    pip install openai==0.28
+    pip install -r requirements.txt
     ```
+
 
 ## Usage
 
@@ -49,9 +50,27 @@ This Python script uses `nmap` to scan a local subnet for open ports and then se
 3. **Check the output**:
     The scan results and security recommendations will be saved to `scan_results.txt`.
 
+4. The script will:
+- List all outdated packages in your Python environment.
+- Query OpenAI's GPT model for vulnerability information for each outdated package.
+- Display the results in the console.
+- Save the results to a file named `package_vulnerabilities.txt` in the same directory.
+
+
+## Customization
+
+- You can modify the `max_tokens` parameter in the `get_package_vulnerabilities` function to adjust the length of the GPT model's response.
+- To change the output file name or location, modify the `filename` parameter in the `append_to_file` function.
+
+## Important Notes
+
+- This script uses the OpenAI API, which may incur costs depending on your usage and plan.
+- The vulnerability information provided by the GPT model is based on its training data and may not always be up-to-date or comprehensive. Always verify critical security information from official sources.
+
+
 ## Example Output
 
-Please note this is a work in progress. Still tweaking it a bit.
+Please note this is a work in progress. Still tweaking it a bit. But you can check out the example output in package_vulnerabilities_EXAMPLE.txt
 
 ### Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.

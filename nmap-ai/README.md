@@ -15,6 +15,7 @@ This Python script uses `nmap` to scan a local subnet for open ports and then se
 - `nmap` installed on your system
 - `python-nmap` library
 - `openai` library
+- Optional: use the requirements.txt file to install all required dependencies. (pip install -r requirements.txt)
 - OpenAI API key
 
 ## Installation
@@ -38,7 +39,12 @@ This Python script uses `nmap` to scan a local subnet for open ports and then se
 
 4. **Install the required Python libraries**:
     ```bash
-    pip install python-nmap openai
+    pip install -r requirements.txt
+    ```
+    OR 
+    ```bash
+    pip install openai==0.28
+    pip install python-nmap
     ```
 
 ## Usage

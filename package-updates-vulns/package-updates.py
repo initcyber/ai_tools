@@ -1,68 +1,95 @@
 import subprocess
-import openai
-import json
+import requests
+import re
+import os
 
-# Set up your OpenAI API key
-openai.api_key = 'YOUR_OPENAI_API_KEY'
-
-
-# Function to get security vulnerabilities from OpenAI
-def get_package_vulnerabilities(package_name, current_version, latest_version):
-    # Prepare the prompt for ChatGPT
-    prompt = (f"The following Python package is outdated:\n"
-              f"Package: {package_name}\n"
-              f"Current Version: {current_version}\n"
-              f"Latest Version: {latest_version}\n"
-              "Please provide information about any critical vulnerabilities "
-              "associated with this package and version, and if upgrading to the "
-              "latest version would mitigate these vulnerabilities.")
-
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # or "gpt-4" if you have access
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=500  # Adjust as needed
-    )
+def get_package_updates():
+    # Update package list
+    subprocess.run(["sudo", "apt", "update"], check=True)
     
-    return response['choices'][0]['message']['content'].strip()
+    # Get upgradable packages
+    result = subprocess.run(["apt", "list", "--upgradable"], capture_output=True, text=True)
+    upgradable_packages = result.stdout.strip().split("\n")[1:]  # Skip the first line
+    
+    return len(upgradable_packages), upgradable_packages
 
-# Function to get the list of outdated packages
-def get_outdated_packages():
+def extract_usn_descriptions(usn_page_content):
+    pattern = r'### (USN-\d+-\d+: [\w ]+)[^#]*'
+    usn_entries = re.findall(pattern, usn_page_content, re.DOTALL)
+    return usn_entries
+
+def get_usn_detail(usn_number, page_content):
+    lines = page_content.split('\n')
+    usn_detail = ''
+    capture_detail = False
+
+    for line in lines:
+        if usn_number in line:
+            capture_detail = True
+            usn_detail += line.strip() + '\n'
+        elif capture_detail:
+            if line.strip() == '' or 'USN-' in line:
+                break
+            usn_detail += line.strip() + '\n'
+    return usn_detail
+
+def get_security_vulnerabilities(packages):
+    vulnerabilities = []
+    
+    # Fetch the main USN page
+    usn_url = "https://ubuntu.com/security/notices"
+    usn_response = requests.get(usn_url)
+    
+    if usn_response.status_code == 200:
+        usn_page_content = usn_response.text
+        usn_entries = extract_usn_descriptions(usn_page_content)
+        
+        for package in packages:
+            package_name = package.split('/')[0]
+            
+            for usn_entry in usn_entries:
+                if package_name.lower() in usn_entry.lower():
+                    usn_number = usn_entry.split(':')[0].strip()
+                    usn_detail = get_usn_detail(usn_number, usn_page_content)
+                    
+                    vulnerabilities.append({
+                        "package": package_name,
+                        "usn": usn_number,
+                        "description": usn_detail
+                    })
+                    break  # Stop after finding the first relevant USN for this package
+    
+    return format_vulnerability_report(vulnerabilities)
+
+def format_vulnerability_report(vulnerabilities):
+    if not vulnerabilities:
+        return "No specific vulnerability information found for the upgradable packages."
+    
+    report = "Potential security vulnerabilities and fixes:\n\n"
+    
+    for vuln in vulnerabilities:
+        report += f"Package: {vuln['package']}\n"
+        report += f"USN: {vuln['usn']}\n"
+        report += f"Description: {vuln['description']}\n\n"
+    
+    return report
+
+def main():
     try:
-        # Run the pip command to list outdated packages
-        result = subprocess.run(["pip", "list", "--outdated"], capture_output=True, text=True)
-        if result.returncode == 0:
-            return result.stdout.splitlines()[2:]  # Skip the header lines
+        num_updates, upgradable_packages = get_package_updates()
+        print(f"Number of packages available to update: {num_updates}")
+        
+        if num_updates > 0:
+            vulnerabilities = get_security_vulnerabilities(upgradable_packages)
+            print("\nPotential security vulnerabilities and fixes:")
+            print(vulnerabilities)
         else:
-            return ["Error running pip list command."]
-    except FileNotFoundError:
-        return ["pip is not installed or not in your system PATH."]
+            print("No packages need updating. Your system is up to date.")
+    
+    except subprocess.CalledProcessError as e:
+        print(f"Error running system commands: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
-# Function to process the outdated packages and query for vulnerabilities
-def process_outdated_packages():
-    outdated_packages = get_outdated_packages()
-    for package_info in outdated_packages:
-        # Assuming package_info format: 'package_name current_version latest_version'
-        package_details = package_info.split()
-        package_name = package_details[0]
-        current_version = package_details[1]
-        latest_version = package_details[2]
-
-        print(f"Checking {package_name} for vulnerabilities...")
-        vulnerabilities = get_package_vulnerabilities(package_name, current_version, latest_version)
-        print(f"Vulnerabilities for {package_name}:\n{vulnerabilities}\n")
-
-        # Optionally append results to a file
-        append_to_file(package_name, vulnerabilities)
-
-# Function to append results to a text file
-def append_to_file(package_name, vulnerabilities, filename='package_vulnerabilities.txt'):
-    with open(filename, 'a') as file:
-        file.write(f"Package: {package_name}\n")
-        file.write(f"Vulnerabilities:\n{vulnerabilities}\n\n")
-
-# Run the script
 if __name__ == "__main__":
-    process_outdated_packages()
+    main()

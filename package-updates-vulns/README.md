@@ -1,6 +1,6 @@
 # Nmap AI Security Scanner
 
-This Python script automates the process of checking for outdated packages in your Python environment and queries OpenAI's GPT model for potential security vulnerabilities associated with these outdated packages.
+This Python script automates the process of checking for outdated packages in your Python environment and queries OpenAI's GPT model for potential security vulnerabilities associated with these outdated packages. It assumes you are running Ubuntu and it checks it against the Ubuntu Security Notices database. It does not provide any results if its not posted to the USN.
 
 ## Features
 
@@ -37,24 +37,25 @@ Before you begin, ensure you have met the following requirements:
     ```
 
 
+5. **Export your OpenAPI key to your environment variables**:
+    ```bash
+    export OPENAI_API_KEY='<your API key>'
+    ```
+
+
 ## Usage
 
-1. **Set your OpenAI API key**:
-    Replace `'YOUR_OPENAI_API_KEY'` in the script with your actual OpenAI API key.
-
-2. **Run the script**:
+1. **Run the script**:
     ```bash
     python package-updates.py
     ```
 
 3. **Check the output**:
-    The scan results and security recommendations will be saved to `scan_results.txt`.
+    The scan results and security recommendations will be shown in the terminal
 
 4. The script will:
-- List all outdated packages in your Python environment.
 - Query OpenAI's GPT model for vulnerability information for each outdated package.
 - Display the results in the console.
-- Save the results to a file named `package_vulnerabilities.txt` in the same directory.
 
 
 ## Customization
@@ -69,8 +70,24 @@ Before you begin, ensure you have met the following requirements:
 
 
 ## Example Output
+```bash
+(venv) justin@Justin-Laptop:~/github/ai_tools/package-updates-vulns$ python package-updates.py 
+Hit:1 https://dl.google.com/linux/chrome/deb stable InRelease
+Hit:2 https://download.docker.com/linux/ubuntu jammy InRelease                                 
+Hit:3 http://archive.ubuntu.com/ubuntu jammy InRelease                                         
+Hit:4 http://archive.ubuntu.com/ubuntu jammy-updates InRelease               
+Hit:5 http://archive.ubuntu.com/ubuntu jammy-backports InRelease             
+Hit:6 http://security.ubuntu.com/ubuntu jammy-security InRelease             
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+25 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Number of packages available to update: 25
 
-Please note this is a work in progress. Still tweaking it a bit. But you can check out the example output in package_vulnerabilities_EXAMPLE.txt
+Potential security vulnerabilities and fixes:
+No specific vulnerability information found for the upgradable packages.
+```
+
 
 ### Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
